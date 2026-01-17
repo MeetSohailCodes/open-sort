@@ -16,7 +16,6 @@
   } from "@heroui/react";
   import {
     FolderOpen,
-    CheckCircle,
     FileImage,
     FileVideo,
     Music,

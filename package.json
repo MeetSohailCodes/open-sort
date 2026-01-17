@@ -10,7 +10,8 @@
     "build:frontend": "cd frontend && npm run build",
     "build:backend": "cd backend && ..\\backend\\venv\\Scripts\\pyinstaller --onefile --noconsole --name main main.py",
     "pack": "electron-builder --dir",
-    "dist": "npm run build:frontend && npm run build:backend && electron-builder"
+    "dist": "npm run build:frontend && npm run build:backend && electron-builder",
+    "dist:win": "npm run build:frontend && npm run build:backend && electron-builder --win --x64 --arm64"
   },
   "build": {
     "appId": "com.antigravity.mediaorganizer",
