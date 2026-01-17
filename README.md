@@ -3,8 +3,11 @@
 Archivist is a local-first media organizer that sorts photos, videos, audio, archives, and documents into a clean folder structure. It runs with a React + Electron UI and a FastAPI backend, and it keeps all processing on your machine.
 
 ![App Screenshot](docs/screenshots/app-preview.png)
+                           ⏬
 ![App Screenshot](docs/screenshots/app-preview-01.png)
+                           ⏬
 ![App Screenshot](docs/screenshots/app-preview-02.png)
+                           ⏬
 ![App Screenshot](docs/screenshots/app-preview-03.png)
 
 

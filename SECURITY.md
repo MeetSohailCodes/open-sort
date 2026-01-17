@@ -2,7 +2,7 @@
 
 ## Reporting a Vulnerability
 Please report security issues privately using GitHub Security Advisories for this repository:
-- https://github.com/MeetSohailCodes/OrganizerApp/security/advisories
+- https://github.com/MeetSohailCodes/Archivist/security/advisories
 
 If you cannot use Security Advisories, open a GitHub issue with the prefix `[SECURITY]` and provide as much detail as possible.
 
