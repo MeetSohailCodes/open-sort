@@ -1,7 +1,6 @@
 import { Button, Checkbox, Chip, Input, Accordion, AccordionItem } from "@heroui/react";
 import { Plus, FileImage, FileVideo, Music, Archive, FileText } from "lucide-react";
 import { useMemo, useState } from "react";
-import RenameOptions, { RenameStrategy, RenameLabelPosition, RenameDatePosition } from "./RenameOptions";
 
 export type ExtensionCategory = "Photos" | "Videos" | "Audio" | "Archives" | "Documents";
 
@@ -14,16 +13,6 @@ export interface ConfigPanelProps {
   ignoredDirs: string[];
   onAddIgnoreDir: (value: string) => void;
   onRemoveIgnoreDir: (value: string) => void;
-  renameEnabled: boolean;
-  renameStrategy: RenameStrategy;
-  renameLabel: string;
-  renameLabelPosition: RenameLabelPosition;
-  renameDatePosition: RenameDatePosition;
-  onToggleRename: (next: boolean) => void;
-  onChangeRenameStrategy: (next: RenameStrategy) => void;
-  onChangeRenameLabel: (next: string) => void;
-  onChangeRenameLabelPosition: (next: RenameLabelPosition) => void;
-  onChangeRenameDatePosition: (next: RenameDatePosition) => void;
 }
 
 const CATEGORY_ICONS: Record<ExtensionCategory, React.ReactNode> = {
@@ -41,16 +30,6 @@ export default function ConfigPanel({
   ignoredDirs,
   onAddIgnoreDir,
   onRemoveIgnoreDir,
-  renameEnabled,
-  renameStrategy,
-  renameLabel,
-  renameLabelPosition,
-  renameDatePosition,
-  onToggleRename,
-  onChangeRenameStrategy,
-  onChangeRenameLabel,
-  onChangeRenameLabelPosition,
-  onChangeRenameDatePosition,
 }: ConfigPanelProps) {
   const [ignoreInput, setIgnoreInput] = useState("");
 
@@ -191,19 +170,6 @@ export default function ConfigPanel({
           })}
         </Accordion>
       </div>
-
-      <RenameOptions
-        enabled={renameEnabled}
-        strategy={renameStrategy}
-        label={renameLabel}
-        labelPosition={renameLabelPosition}
-        datePosition={renameDatePosition}
-        onToggleEnabled={onToggleRename}
-        onChangeStrategy={onChangeRenameStrategy}
-        onChangeLabel={onChangeRenameLabel}
-        onChangeLabelPosition={onChangeRenameLabelPosition}
-        onChangeDatePosition={onChangeRenameDatePosition}
-      />
 
       {/* Ignored Folders Section */}
       <div className="space-y-4">

@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, dialog } = require("electron");
+const { app, BrowserWindow, ipcMain, dialog, Menu } = require("electron");
 
 ipcMain.handle("select-dirs", async () => {
   const result = await dialog.showOpenDialog(mainWindow, {
@@ -14,6 +14,64 @@ let pythonProcess;
 
 const API_PORT = 45455;
 const IS_DEV = process.env.NODE_ENV === "development";
+
+const ZOOM_MIN = 0.5;
+const ZOOM_MAX = 2.0;
+
+function clampZoomFactor(value) {
+  const numeric = Number(value);
+  if (!Number.isFinite(numeric)) return 1;
+  return Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, numeric));
+}
+
+function createAppMenu() {
+  const template = [
+    {
+      label: "View",
+      submenu: [
+        { role: "reload" },
+        { role: "forceReload" },
+        { role: "toggleDevTools" },
+        { type: "separator" },
+        { role: "resetZoom" },
+        { role: "zoomIn" },
+        { role: "zoomOut" },
+        { type: "separator" },
+        { role: "togglefullscreen" },
+      ],
+    },
+  ];
+
+  const menu = Menu.buildFromTemplate(template);
+  Menu.setApplicationMenu(menu);
+}
+
+ipcMain.handle("zoom:get", async (event) => {
+  try {
+    return event?.sender?.getZoomFactor?.() ?? 1;
+  } catch {
+    return 1;
+  }
+});
+
+ipcMain.handle("zoom:set", async (event, factor) => {
+  const next = clampZoomFactor(factor);
+  try {
+    event?.sender?.setZoomFactor?.(next);
+  } catch {
+    // ignore
+  }
+  return next;
+});
+
+ipcMain.handle("zoom:reset", async (event) => {
+  try {
+    event?.sender?.setZoomFactor?.(1);
+  } catch {
+    // ignore
+  }
+  return 1;
+});
 
 function startPythonBackend() {
   let scriptPath;
@@ -72,6 +130,16 @@ function createWindow() {
     },
   });
 
+  // Ensure zoom never gets stuck between runs
+  mainWindow.webContents.setZoomFactor(1);
+  mainWindow.webContents.on("did-finish-load", () => {
+    try {
+      mainWindow.webContents.setZoomFactor(1);
+    } catch {
+      // ignore
+    }
+  });
+
   if (IS_DEV) {
     mainWindow.loadURL("http://localhost:5173");
     mainWindow.webContents.openDevTools();
@@ -81,6 +149,7 @@ function createWindow() {
 }
 
 app.whenReady().then(() => {
+  createAppMenu();
   startPythonBackend();
   createWindow();
 
