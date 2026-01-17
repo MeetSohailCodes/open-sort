@@ -116,14 +116,17 @@ function startPythonBackend() {
 }
 
 function createWindow() {
-  const windowIcon = path.join(__dirname, "assets", "icon.png");
+  const windowIcon = IS_DEV
+    ? path.join(__dirname, "assets", "icon.png")
+    : path.join(process.resourcesPath, "app.asar", "assets", "icon.png");
   mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
-    backgroundColor: "#00000000",
-    transparent: true,
+    backgroundColor: "#1f2328",
+    transparent: false,
     hasShadow: true,
     icon: windowIcon,
+    frame: true,
     ...(IS_MAC
       ? {
           vibrancy: "sidebar",
@@ -134,11 +137,7 @@ function createWindow() {
       contextIsolation: false,
     },
     autoHideMenuBar: true,
-    titleBarStyle: "hidden", // Custom Title Bar look
-    titleBarOverlay: {
-      color: "#00000000",
-      symbolColor: "#ffffff",
-    },
+    titleBarStyle: "default",
   });
 
   // Ensure zoom never gets stuck between runs

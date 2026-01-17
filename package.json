@@ -14,8 +14,9 @@
     "dist:win": "npm run build:frontend && npm run build:backend && electron-builder --win --x64 --arm64"
   },
   "build": {
-    "appId": "com.antigravity.mediaorganizer",
+    "appId": "com.meetsohail.archivist",
     "productName": "Archivist",
+    "icon": "build/icon",
     "files": [
       "main.js",
       "assets/**/*",
@@ -30,21 +31,17 @@
     ],
     "win": {
       "target": "nsis",
-      "icon": "assets/icon.ico",
       "signAndEditExecutable": false
     },
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
-      "installerIcon": "assets/icon.ico",
-      "uninstallerIcon": "assets/icon.ico",
-      "installerHeaderIcon": "assets/icon.ico",
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
       "shortcutName": "Archivist"
     }
   },
-  "author": "Antigravity",
+  "author": "Meet Sohail",
   "license": "MIT",
   "devDependencies": {
     "concurrently": "^9.2.1",
