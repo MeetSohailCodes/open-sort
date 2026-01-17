@@ -50,9 +50,9 @@ function createAppMenu() {
 
 ipcMain.handle("zoom:get", async (event) => {
   try {
-    return event?.sender?.getZoomFactor?.() ?? 1;
+    return event?.sender?.getZoomFactor?.() ?? 0.9;
   } catch {
-    return 1;
+    return 0.9;
   }
 });
 
@@ -68,11 +68,11 @@ ipcMain.handle("zoom:set", async (event, factor) => {
 
 ipcMain.handle("zoom:reset", async (event) => {
   try {
-    event?.sender?.setZoomFactor?.(1);
+    event?.sender?.setZoomFactor?.(0.9);
   } catch {
     // ignore
   }
-  return 1;
+  return 0.9;
 });
 
 function startPythonBackend() {
@@ -142,10 +142,10 @@ function createWindow() {
   });
 
   // Ensure zoom never gets stuck between runs
-  mainWindow.webContents.setZoomFactor(1);
+  mainWindow.webContents.setZoomFactor(0.9);
   mainWindow.webContents.on("did-finish-load", () => {
     try {
-      mainWindow.webContents.setZoomFactor(1);
+      mainWindow.webContents.setZoomFactor(0.9);
     } catch {
       // ignore
     }
