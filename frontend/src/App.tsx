@@ -42,7 +42,6 @@ import ConfigPanel, { ExtensionsByCategory } from "./components/ConfigPanel";
 import RenameOptions, { RenameStrategy, RenameLabelPosition, RenameDatePosition } from "./components/RenameOptions";
 import { Typography } from "./components/Typography";
 import { app } from "./config/index.config";
-
   // API URL
   const API_URL = "http://127.0.0.1:45455";
   const WS_URL = "ws://127.0.0.1:45455/ws";
@@ -502,16 +501,9 @@ import { app } from "./config/index.config";
         <header className="fixed top-0 left-0 right-0 z-50 bg-slate-800/80 backdrop-blur-xl border-b border-slate-700/50 app-drag">
           <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-slate-700/50 rounded-lg border border-slate-600/30">
-                <Layers size={20} className="text-slate-200" strokeWidth={2.5} />
-            </div>
+             
             <div>
-              <Typography as="h1" variant="h4" className="text-slate-50 tracking-wide">
-                {app.name}
-              </Typography>
-              <Typography as="p" variant="caption" className="text-slate-400 tracking-[0.15em]">
-                {app.tagline}
-              </Typography>
+             <img src="/header-icon-light.png" alt="Archivist" className="w-full h-32 object-contain" />
             </div>
             </div>
 
@@ -523,7 +515,7 @@ import { app } from "./config/index.config";
                   </Typography>
                 }
               >
-                <Button
+                <Button 
                   isIconOnly
                   size="sm"
                   variant="flat"
@@ -1169,12 +1161,10 @@ import { app } from "./config/index.config";
                   transition={{ duration: 0.3 }}
                   className="flex flex-col items-center justify-center min-h-[500px]"
                 >
-                  <div className="w-24 h-24 bg-emerald-500/20 rounded-full flex items-center justify-center mb-8 border border-emerald-500/30">
-                    <CheckCircle size={48} className="text-emerald-400" />
-                  </div>
+                
 
                   <Typography as="h2" variant="h2" className="text-3xl text-slate-50 mb-3">
-                    Organization Complete
+                    Organization Complete 🎉
                   </Typography>
                   <Typography as="p" variant="body" className="text-slate-400 mb-10 text-center max-w-md">
                     Your files have been successfully organized into the destination folder.
