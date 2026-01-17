@@ -1,5 +1,6 @@
 import { Checkbox } from "@heroui/react";
 import { RotateCcw } from "lucide-react";
+import { Typography } from "./Typography";
 
 export type RenameStrategy = "date_original" | "datetime_original" | "label_date";
 export type RenameLabelPosition = "prefix" | "suffix";
@@ -89,8 +90,12 @@ export default function RenameOptions({
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Rename Files (Optional)</p>
-          <p className="text-[10px] text-slate-500">Rename using metadata date when available. Otherwise, keep original.</p>
+          <Typography as="p" variant="caption" className="text-slate-400 tracking-wider font-bold">
+            Rename Files (Optional)
+          </Typography>
+          <Typography as="p" variant="body-sm" className="text-[10px] text-slate-500">
+            Rename using metadata date when available. Otherwise, keep original.
+          </Typography>
         </div>
         <Checkbox
           isSelected={enabled}
@@ -101,7 +106,9 @@ export default function RenameOptions({
             wrapper: "before:border-slate-500",
           }}
         >
-          Enable
+          <Typography as="span" variant="label" className="text-xs text-slate-200">
+            Enable
+          </Typography>
         </Checkbox>
       </div>
 
@@ -112,7 +119,9 @@ export default function RenameOptions({
       >
         <div className="space-y-3">
           <div className="space-y-2">
-            <p className="text-[10px] uppercase tracking-widest text-slate-500">Date Format</p>
+            <Typography as="p" variant="caption" className="text-slate-500 tracking-widest">
+              Date Format
+            </Typography>
             <div className="relative">
               <select
                 value={strategy}
@@ -129,7 +138,9 @@ export default function RenameOptions({
           </div>
 
           <div className="space-y-2">
-            <p className="text-[10px] uppercase tracking-widest text-slate-500">Custom Label</p>
+            <Typography as="p" variant="caption" className="text-slate-500 tracking-widest">
+              Custom Label
+            </Typography>
             <input
               type="text"
               value={label}
@@ -141,7 +152,9 @@ export default function RenameOptions({
 
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-2">
-              <p className="text-[10px] uppercase tracking-widest text-slate-500">Label Position</p>
+              <Typography as="p" variant="caption" className="text-slate-500 tracking-widest">
+                Label Position
+              </Typography>
               <select
                 value={labelPositionValue}
                 onChange={(e) => onChangeLabelPosition(e.target.value as RenameLabelPosition)}
@@ -157,7 +170,9 @@ export default function RenameOptions({
             </div>
 
             <div className="space-y-2">
-              <p className="text-[10px] uppercase tracking-widest text-slate-500">Date Position</p>
+              <Typography as="p" variant="caption" className="text-slate-500 tracking-widest">
+                Date Position
+              </Typography>
               <select
                 value={datePositionValue}
                 onChange={(e) => onChangeDatePosition(e.target.value as RenameDatePosition)}
@@ -179,8 +194,12 @@ export default function RenameOptions({
             <RotateCcw size={16} />
           </div>
           <div>
-            <p className="text-[10px] uppercase tracking-widest text-slate-500">Preview</p>
-            <p className="text-xs text-slate-200 font-mono">{buildPreview()}</p>
+            <Typography as="p" variant="caption" className="text-slate-500 tracking-widest">
+              Preview
+            </Typography>
+            <Typography as="p" variant="mono" className="text-xs text-slate-200">
+              {buildPreview()}
+            </Typography>
           </div>
         </div>
       </div>

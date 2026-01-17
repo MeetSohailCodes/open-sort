@@ -1,6 +1,7 @@
 import { Button, Checkbox, Chip, Input, Accordion, AccordionItem } from "@heroui/react";
 import { Plus, FileImage, FileVideo, Music, Archive, FileText } from "lucide-react";
 import { useMemo, useState } from "react";
+import { Typography } from "./Typography";
 
 export type ExtensionCategory = "Photos" | "Videos" | "Audio" | "Archives" | "Documents";
 
@@ -76,10 +77,12 @@ export default function ConfigPanel({
       {/* File Types Section */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">File Types to Organize</p>
-          <p className="text-[10px] text-slate-500">
+          <Typography as="p" variant="caption" className="text-slate-400 tracking-wider font-bold">
+            File Types to Organize
+          </Typography>
+          <Typography as="p" variant="body-sm" className="text-[10px] text-slate-500">
             {Object.values(selectedExtensions).flat().length} types selected
-          </p>
+          </Typography>
         </div>
 
         <Accordion
@@ -118,15 +121,19 @@ export default function ConfigPanel({
                 }
                 title={
                   <div className="flex items-center justify-between flex-1">
-                    <span>{category}</span>
+                    <Typography as="span" variant="body" className="text-sm">
+                      {category}
+                    </Typography>
                     <div className="flex items-center gap-3">
-                      <span
+                      <Typography
+                        as="span"
+                        variant="caption"
                         className={`text-[10px] uppercase tracking-widest ${
                           allSelected ? "text-emerald-400" : "text-slate-500"
                         }`}
                       >
                         {selected.length}/{options.length}
-                      </span>
+                      </Typography>
                       <Checkbox
                         isSelected={allSelected}
                         isIndeterminate={someSelected}
@@ -161,7 +168,9 @@ export default function ConfigPanel({
                           wrapper: "before:border-slate-500",
                         }}
                       />
-                      <span className="text-xs font-mono">{ext}</span>
+                      <Typography as="span" variant="mono" className="text-xs">
+                        {ext}
+                      </Typography>
                     </div>
                   ))}
                 </div>
@@ -174,10 +183,12 @@ export default function ConfigPanel({
       {/* Ignored Folders Section */}
       <div className="space-y-4">
         <div>
-          <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Ignored Folders</p>
-          <p className="text-[10px] text-slate-500">
+          <Typography as="p" variant="caption" className="text-slate-400 tracking-wider font-bold mb-1">
+            Ignored Folders
+          </Typography>
+          <Typography as="p" variant="body-sm" className="text-[10px] text-slate-500">
             These folders will be skipped during scanning (e.g., dependencies, system folders)
-          </p>
+          </Typography>
         </div>
 
         <div className="flex gap-2">
@@ -203,13 +214,17 @@ export default function ConfigPanel({
             className="bg-slate-600 text-slate-100 font-medium min-w-[100px] h-12"
             startContent={<Plus size={16} />}
           >
-            Add
+            <Typography as="span" variant="body" className="text-sm text-slate-100">
+              Add
+            </Typography>
           </Button>
         </div>
 
         <div className="flex flex-wrap gap-2 min-h-[40px]">
           {ignoredDirs.length === 0 ? (
-            <p className="text-xs text-slate-500 italic">No folders ignored. Add folders to exclude from scanning.</p>
+            <Typography as="p" variant="body-sm" className="text-xs text-slate-500 italic">
+              No folders ignored. Add folders to exclude from scanning.
+            </Typography>
           ) : (
             ignoredDirs.map((dir) => (
               <Chip
@@ -221,7 +236,9 @@ export default function ConfigPanel({
                 }}
                 onClose={() => onRemoveIgnoreDir(dir)}
               >
-                {dir}
+                <Typography as="span" variant="mono" className="text-xs">
+                  {dir}
+                </Typography>
               </Chip>
             ))
           )}

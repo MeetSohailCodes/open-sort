@@ -73,6 +73,13 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+button,
+input,
+select,
+textarea {
+  font-family: var(--font-body);
+}
+
 h1,
 h2,
 h3,

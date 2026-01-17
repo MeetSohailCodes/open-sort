@@ -38,9 +38,10 @@
     Github,
     Linkedin,
   } from "lucide-react";
-  import ConfigPanel, { ExtensionsByCategory } from "./components/ConfigPanel";
-  import RenameOptions, { RenameStrategy, RenameLabelPosition, RenameDatePosition } from "./components/RenameOptions";
-  import { app } from "./config/index.config";
+import ConfigPanel, { ExtensionsByCategory } from "./components/ConfigPanel";
+import RenameOptions, { RenameStrategy, RenameLabelPosition, RenameDatePosition } from "./components/RenameOptions";
+import { Typography } from "./components/Typography";
+import { app } from "./config/index.config";
 
   // API URL
   const API_URL = "http://127.0.0.1:45455";
@@ -147,6 +148,54 @@
     const currentYear = new Date().getFullYear();
 
     const ws = useRef<WebSocket | null>(null);
+    const completionAudioRef = useRef<HTMLAudioElement | null>(null);
+
+    const initCompletionAudio = useCallback(() => {
+      if (completionAudioRef.current) return;
+
+      try {
+        const audio = new Audio("/assets/sounds/complete.wav");
+        audio.preload = "auto";
+        audio.volume = 0.85;
+        completionAudioRef.current = audio;
+      } catch {
+        completionAudioRef.current = null;
+      }
+    }, []);
+
+    const primeCompletionAudio = useCallback(() => {
+      const audio = completionAudioRef.current;
+      if (!audio) return;
+
+      try {
+        const originalVolume = audio.volume;
+        audio.volume = 0;
+        const p = audio.play();
+        Promise.resolve(p)
+          .then(() => {
+            audio.pause();
+            audio.currentTime = 0;
+            audio.volume = originalVolume;
+          })
+          .catch(() => {
+            audio.volume = originalVolume;
+          });
+      } catch {
+        // ignore
+      }
+    }, []);
+
+    const playCompletionSound = useCallback(async () => {
+      const audio = completionAudioRef.current;
+      if (!audio) return;
+
+      try {
+        audio.currentTime = 0;
+        await audio.play();
+      } catch {
+        // Autoplay may be blocked in some environments; ignore silently.
+      }
+    }, []);
 
     const getIpcRenderer = () => {
       try {
@@ -211,6 +260,11 @@
       const interval = setInterval(checkHealth, 2000);
       return () => clearInterval(interval);
     }, []);
+
+    // Preload notification sound
+    useEffect(() => {
+      initCompletionAudio();
+    }, [initCompletionAudio]);
 
     // Load current zoom from Electron (if running in Electron)
     useEffect(() => {
@@ -316,6 +370,9 @@
     const startOrganization = useCallback(() => {
       if (!sourcePath || !destPath) return;
 
+      initCompletionAudio();
+      primeCompletionAudio();
+
       setStep("processing");
       setProgress(0);
       setCurrentFile("Initializing...");
@@ -371,6 +428,7 @@
           setProgress(100);
           setCurrentFile("Completed");
           setStep("done");
+          void playCompletionSound();
           ws.current?.close();
         } else if (msg.type === "error") {
           setErrorMessage(msg.error || "Unexpected backend error.");
@@ -394,7 +452,7 @@
           setCurrentFile("Stopped due to error");
         }
       };
-    }, [sourcePath, destPath, organizeMode, selectedExtensions, ignoredDirs, renameEnabled, renameStrategy, renameLabel, renameLabelPosition, renameDatePosition, finalStats, errorMessage, step]);
+    }, [sourcePath, destPath, organizeMode, selectedExtensions, ignoredDirs, renameEnabled, renameStrategy, renameLabel, renameLabelPosition, renameDatePosition, finalStats, errorMessage, step, initCompletionAudio, primeCompletionAudio, playCompletionSound]);
 
     const handleCancelProcess = () => {
       ws.current?.close();
@@ -446,17 +504,25 @@
             <div className="flex items-center gap-3">
               <div className="p-2 bg-slate-700/50 rounded-lg border border-slate-600/30">
                 <Layers size={20} className="text-slate-200" strokeWidth={2.5} />
-              </div>
-              <div>
-                <h1 className="text-lg font-bold text-slate-50 tracking-wide">{app.name}</h1>
-                <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-[0.15em]">
-                  {app.tagline}
-                </p>
-              </div>
+            </div>
+            <div>
+              <Typography as="h1" variant="h4" className="text-slate-50 tracking-wide">
+                {app.name}
+              </Typography>
+              <Typography as="p" variant="caption" className="text-slate-400 tracking-[0.15em]">
+                {app.tagline}
+              </Typography>
+            </div>
             </div>
 
             <div className="flex items-center gap-2 app-no-drag">
-              <Tooltip content={`Zoom Out (${Math.round(zoomFactor * 100)}%)`}>
+              <Tooltip
+                content={
+                  <Typography as="span" variant="body-sm">
+                    Zoom Out ({Math.round(zoomFactor * 100)}%)
+                  </Typography>
+                }
+              >
                 <Button
                   isIconOnly
                   size="sm"
@@ -469,7 +535,13 @@
                 </Button>
               </Tooltip>
 
-              <Tooltip content={`Reset Zoom (${Math.round(zoomFactor * 100)}%)`}>
+              <Tooltip
+                content={
+                  <Typography as="span" variant="body-sm">
+                    Reset Zoom ({Math.round(zoomFactor * 100)}%)
+                  </Typography>
+                }
+              >
                 <Button
                   isIconOnly
                   size="sm"
@@ -482,7 +554,13 @@
                 </Button>
               </Tooltip>
 
-              <Tooltip content={`Zoom In (${Math.round(zoomFactor * 100)}%)`}>
+              <Tooltip
+                content={
+                  <Typography as="span" variant="body-sm">
+                    Zoom In ({Math.round(zoomFactor * 100)}%)
+                  </Typography>
+                }
+              >
                 <Button
                   isIconOnly
                   size="sm"
@@ -509,7 +587,9 @@
                   content: `font-medium text-xs ${isConnected ? "text-slate-200" : "text-rose-300"}`,
                 }}
               >
-                {isConnected ? "Online" : "Offline"}
+                <Typography as="span" variant="label" className="font-medium">
+                  {isConnected ? "Online" : "Offline"}
+                </Typography>
               </Chip>
             </div>
           </div>
@@ -537,7 +617,9 @@
                         }`}
                       >
                         <Icon size={14} />
-                        <span className="text-xs font-medium">{s.label}</span>
+                      <Typography as="span" variant="body-sm" className="text-xs font-medium">
+                        {s.label}
+                      </Typography>
                       </div>
                       {i < NAV_STEPS.length - 1 && (
                         <div
@@ -567,14 +649,16 @@
                   transition={{ duration: 0.3 }}
                   className="space-y-8"
                 >
-                  <div className="text-center mb-10">
-                    <h2 className="text-3xl font-bold text-slate-50 mb-3">Select Directories</h2>
-                    <p className="text-slate-400 max-w-md mx-auto">
-                      Choose your source folder containing media files and the destination for organized output.
-                    </p>
-                  </div>
+                <div className="text-center mb-10">
+                  <Typography as="h2" variant="h2" className="text-3xl text-slate-50 mb-3">
+                    Select Directories
+                  </Typography>
+                  <Typography as="p" variant="body" className="text-slate-400 max-w-md mx-auto">
+                    Choose your source folder containing media files and the destination for organized output.
+                  </Typography>
+                </div>
 
-                  <div className="bg-slate-700/30 rounded-2xl border border-slate-600/30 p-8 space-y-6">
+                  <div className="bg-slate-700/30 rounded-2xl border border-slate-600/30 p-8 space-y-8">
                     <Input
                       label="SOURCE FOLDER"
                       labelPlacement="outside"
@@ -585,16 +669,18 @@
                       radius="lg"
                       size="lg"
                       startContent={<FolderOpen className="text-slate-400" size={20} />}
-                      endContent={
-                        <Button
-                          size="sm"
-                          variant="flat"
-                          onPress={() => handleBrowse("source")}
-                          className="bg-slate-600 text-slate-100 font-medium min-w-[90px]"
-                        >
+                    endContent={
+                      <Button
+                        size="sm"
+                        variant="flat"
+                        onPress={() => handleBrowse("source")}
+                        className="bg-slate-600 text-slate-100 font-medium min-w-[90px]"
+                      >
+                        <Typography as="span" variant="label" className="font-medium text-slate-100">
                           Browse
-                        </Button>
-                      }
+                        </Typography>
+                      </Button>
+                    }
                       classNames={{
                         label: "text-xs font-bold text-slate-400 tracking-wider pb-2",
                         input: "text-slate-100 font-medium",
@@ -613,16 +699,18 @@
                       radius="lg"
                       size="lg"
                       startContent={<Archive className="text-slate-400" size={20} />}
-                      endContent={
-                        <Button
-                          size="sm"
-                          variant="flat"
-                          onPress={() => handleBrowse("dest")}
-                          className="bg-slate-600 text-slate-100 font-medium min-w-[90px]"
-                        >
+                    endContent={
+                      <Button
+                        size="sm"
+                        variant="flat"
+                        onPress={() => handleBrowse("dest")}
+                        className="bg-slate-600 text-slate-100 font-medium min-w-[90px]"
+                      >
+                        <Typography as="span" variant="label" className="font-medium text-slate-100">
                           Browse
-                        </Button>
-                      }
+                        </Typography>
+                      </Button>
+                    }
                       classNames={{
                         label: "text-xs font-bold text-slate-400 tracking-wider pb-2",
                         input: "text-slate-100 font-medium",
@@ -635,22 +723,32 @@
                     {isSameFolder && (
                       <div className="flex items-start gap-3 p-4 bg-amber-500/10 border border-amber-500/30 rounded-xl">
                         <AlertTriangle className="text-amber-400 flex-shrink-0 mt-0.5" size={18} />
-                        <div>
-                          <p className="text-sm font-medium text-amber-300">In-Place Organization</p>
-                          <p className="text-xs text-amber-400/80 mt-1">
-                            Source and destination are the same. Files will be reorganized within this folder.
-                          </p>
-                        </div>
+                      <div>
+                        <Typography as="p" variant="body-sm" className="text-sm font-medium text-amber-300">
+                          In-Place Organization
+                        </Typography>
+                        <Typography as="p" variant="body-sm" className="text-xs text-amber-400/80 mt-1">
+                          Source and destination are the same. Files will be reorganized within this folder.
+                        </Typography>
+                      </div>
                       </div>
                     )}
 
                     {/* Organization Strategy */}
                     <div className="pt-4 space-y-3">
                       <div className="flex items-center justify-between">
-                        <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Organization Type</p>
-                        <Tooltip content="Choose how files are structured inside the destination">
-                          <Info size={14} className="text-slate-500" />
-                        </Tooltip>
+                      <Typography as="p" variant="caption" className="text-slate-400 font-bold tracking-wider">
+                        Organization Type
+                      </Typography>
+                      <Tooltip
+                        content={
+                          <Typography as="span" variant="body-sm">
+                            Choose how files are structured inside the destination
+                          </Typography>
+                        }
+                      >
+                        <Info size={14} className="text-slate-500" />
+                      </Tooltip>
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                         {ORGANIZE_OPTIONS.map((option) => {
@@ -667,9 +765,13 @@
                               }`}
                             >
                               <div className="flex items-center justify-between">
-                                <p className={`text-sm font-semibold ${isActive ? "text-slate-100" : "text-slate-300"}`}>
-                                  {option.label}
-                                </p>
+                              <Typography
+                                as="p"
+                                variant="body"
+                                className={`text-sm font-semibold ${isActive ? "text-slate-100" : "text-slate-300"}`}
+                              >
+                                {option.label}
+                              </Typography>
                                 <Checkbox
                                   isSelected={isActive}
                                   color="default"
@@ -680,8 +782,12 @@
                                   onClick={(event) => event.stopPropagation()}
                                 />
                               </div>
-                              <p className="text-xs text-slate-400 mt-2">{option.description}</p>
-                              <p className="text-[10px] text-slate-500 mt-2 font-mono">{option.example}</p>
+                            <Typography as="p" variant="body-sm" className="text-xs text-slate-400 mt-2">
+                              {option.description}
+                            </Typography>
+                            <Typography as="p" variant="mono" className="text-[10px] text-slate-500 mt-2">
+                              {option.example}
+                            </Typography>
                             </button>
                           );
                         })}
@@ -690,16 +796,18 @@
                   </div>
 
                   <div className="flex justify-end">
-                    <Button
-                      size="lg"
-                      radius="lg"
-                      isDisabled={!canProceed}
-                      onPress={() => setStep("types")}
-                      className="bg-slate-100 text-slate-800 font-semibold px-8 hover:bg-white"
-                      endContent={<ArrowRight size={18} />}
-                    >
+                  <Button
+                    size="lg"
+                    radius="lg"
+                    isDisabled={!canProceed}
+                    onPress={() => setStep("types")}
+                    className="bg-slate-100 text-slate-800 font-semibold px-8 hover:bg-white"
+                    endContent={<ArrowRight size={18} />}
+                  >
+                    <Typography as="span" variant="body" className="text-sm">
                       Continue to File Types
-                    </Button>
+                    </Typography>
+                  </Button>
                   </div>
                 </motion.div>
               )}
@@ -715,12 +823,14 @@
                   transition={{ duration: 0.3 }}
                   className="space-y-8"
                 >
-                  <div className="text-center mb-10">
-                    <h2 className="text-3xl font-bold text-slate-50 mb-3">File Types to Organize</h2>
-                    <p className="text-slate-400 max-w-md mx-auto">
-                      Select which file types to organize and folders to skip during scanning.
-                    </p>
-                  </div>
+                <div className="text-center mb-10">
+                  <Typography as="h2" variant="h2" className="text-3xl text-slate-50 mb-3">
+                    File Types to Organize
+                  </Typography>
+                  <Typography as="p" variant="body" className="text-slate-400 max-w-md mx-auto">
+                    Select which file types to organize and folders to skip during scanning.
+                  </Typography>
+                </div>
 
                   <div className={configCardClass}>
                     <ConfigPanel
@@ -734,25 +844,29 @@
                   </div>
 
                   <div className="flex justify-between">
-                    <Button
-                      size="lg"
-                      radius="lg"
-                      variant="flat"
-                      onPress={() => setStep("setup")}
-                      className="bg-slate-700/50 text-slate-200 font-medium px-6"
-                      startContent={<ArrowLeft size={18} />}
-                    >
+                  <Button
+                    size="lg"
+                    radius="lg"
+                    variant="flat"
+                    onPress={() => setStep("setup")}
+                    className="bg-slate-700/50 text-slate-200 font-medium px-6"
+                    startContent={<ArrowLeft size={18} />}
+                  >
+                    <Typography as="span" variant="body" className="text-sm">
                       Back
-                    </Button>
-                    <Button
-                      size="lg"
-                      radius="lg"
-                      onPress={() => setStep("rename")}
-                      className="bg-slate-100 text-slate-800 font-semibold px-8 hover:bg-white"
-                      endContent={<ArrowRight size={18} />}
-                    >
+                    </Typography>
+                  </Button>
+                  <Button
+                    size="lg"
+                    radius="lg"
+                    onPress={() => setStep("rename")}
+                    className="bg-slate-100 text-slate-800 font-semibold px-8 hover:bg-white"
+                    endContent={<ArrowRight size={18} />}
+                  >
+                    <Typography as="span" variant="body" className="text-sm">
                       Continue to Renaming
-                    </Button>
+                    </Typography>
+                  </Button>
                   </div>
                 </motion.div>
               )}
@@ -768,12 +882,14 @@
                   transition={{ duration: 0.3 }}
                   className="space-y-8"
                 >
-                  <div className="text-center mb-10">
-                    <h2 className="text-3xl font-bold text-slate-50 mb-3">Rename Files</h2>
-                    <p className="text-slate-400 max-w-md mx-auto">
-                      Configure how files should be renamed using metadata dates and custom labels.
-                    </p>
-                  </div>
+                <div className="text-center mb-10">
+                  <Typography as="h2" variant="h2" className="text-3xl text-slate-50 mb-3">
+                    Rename Files
+                  </Typography>
+                  <Typography as="p" variant="body" className="text-slate-400 max-w-md mx-auto">
+                    Configure how files should be renamed using metadata dates and custom labels.
+                  </Typography>
+                </div>
 
                   <div className={configCardClass}>
                     <RenameOptions
@@ -791,25 +907,29 @@
                   </div>
 
                   <div className="flex justify-between">
-                    <Button
-                      size="lg"
-                      radius="lg"
-                      variant="flat"
-                      onPress={() => setStep("types")}
-                      className="bg-slate-700/50 text-slate-200 font-medium px-6"
-                      startContent={<ArrowLeft size={18} />}
-                    >
+                  <Button
+                    size="lg"
+                    radius="lg"
+                    variant="flat"
+                    onPress={() => setStep("types")}
+                    className="bg-slate-700/50 text-slate-200 font-medium px-6"
+                    startContent={<ArrowLeft size={18} />}
+                  >
+                    <Typography as="span" variant="body" className="text-sm">
                       Back
-                    </Button>
-                    <Button
-                      size="lg"
-                      radius="lg"
-                      onPress={() => setStep("confirm")}
-                      className="bg-slate-100 text-slate-800 font-semibold px-8 hover:bg-white"
-                      endContent={<ArrowRight size={18} />}
-                    >
+                    </Typography>
+                  </Button>
+                  <Button
+                    size="lg"
+                    radius="lg"
+                    onPress={() => setStep("confirm")}
+                    className="bg-slate-100 text-slate-800 font-semibold px-8 hover:bg-white"
+                    endContent={<ArrowRight size={18} />}
+                  >
+                    <Typography as="span" variant="body" className="text-sm">
                       Review Settings
-                    </Button>
+                    </Typography>
+                  </Button>
                   </div>
                 </motion.div>
               )}
@@ -825,12 +945,14 @@
                   transition={{ duration: 0.3 }}
                   className="space-y-8"
                 >
-                  <div className="text-center mb-10">
-                    <h2 className="text-3xl font-bold text-slate-50 mb-3">Review & Confirm</h2>
-                    <p className="text-slate-400 max-w-md mx-auto">
-                      Please review your settings before starting the organization process.
-                    </p>
-                  </div>
+                <div className="text-center mb-10">
+                  <Typography as="h2" variant="h2" className="text-3xl text-slate-50 mb-3">
+                    Review & Confirm
+                  </Typography>
+                  <Typography as="p" variant="body" className="text-slate-400 max-w-md mx-auto">
+                    Please review your settings before starting the organization process.
+                  </Typography>
+                </div>
 
                   <div className="bg-slate-700/30 rounded-2xl border border-slate-600/30 p-8 space-y-6">
                     {/* Summary Cards */}
@@ -838,43 +960,67 @@
                       <div className="bg-slate-800/50 rounded-xl p-5 border border-slate-600/30">
                         <div className="flex items-center gap-3 mb-3">
                           <FolderOpen size={18} className="text-slate-400" />
-                          <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Source</span>
+                          <Typography as="span" variant="caption" className="text-slate-400 tracking-wider font-bold">
+                            Source
+                          </Typography>
                         </div>
-                        <p className="text-sm text-slate-200 font-mono break-all">{sourcePath}</p>
+                        <Typography as="p" variant="mono" className="text-sm text-slate-200 break-all">
+                          {sourcePath}
+                        </Typography>
                       </div>
 
                       <div className="bg-slate-800/50 rounded-xl p-5 border border-slate-600/30">
                         <div className="flex items-center gap-3 mb-3">
                           <Archive size={18} className="text-slate-400" />
-                          <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Destination</span>
+                          <Typography as="span" variant="caption" className="text-slate-400 tracking-wider font-bold">
+                            Destination
+                          </Typography>
                         </div>
-                        <p className="text-sm text-slate-200 font-mono break-all">{destPath}</p>
+                        <Typography as="p" variant="mono" className="text-sm text-slate-200 break-all">
+                          {destPath}
+                        </Typography>
                       </div>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                       <div className="bg-slate-800/50 rounded-xl p-5 border border-slate-600/30 text-center">
                         <Zap size={24} className="text-slate-400 mx-auto mb-2" />
-                        <p className="text-2xl font-bold text-slate-100">{getSelectedExtCount()}</p>
-                        <p className="text-xs text-slate-400 uppercase tracking-wider mt-1">File Types</p>
+                        <Typography as="p" variant="h4" className="text-2xl text-slate-100">
+                          {getSelectedExtCount()}
+                        </Typography>
+                        <Typography as="p" variant="caption" className="text-slate-400 tracking-wider mt-1">
+                          File Types
+                        </Typography>
                       </div>
 
                       <div className="bg-slate-800/50 rounded-xl p-5 border border-slate-600/30 text-center">
                         <Shield size={24} className="text-slate-400 mx-auto mb-2" />
-                        <p className="text-2xl font-bold text-slate-100">{ignoredDirs.length}</p>
-                        <p className="text-xs text-slate-400 uppercase tracking-wider mt-1">Ignored Folders</p>
+                        <Typography as="p" variant="h4" className="text-2xl text-slate-100">
+                          {ignoredDirs.length}
+                        </Typography>
+                        <Typography as="p" variant="caption" className="text-slate-400 tracking-wider mt-1">
+                          Ignored Folders
+                        </Typography>
                       </div>
 
                       <div className="bg-slate-800/50 rounded-xl p-5 border border-slate-600/30 text-center">
                         <Layers size={24} className="text-slate-400 mx-auto mb-2" />
-                        <p className="text-2xl font-bold text-slate-100">{organizeLabel}</p>
-                        <p className="text-xs text-slate-400 uppercase tracking-wider mt-1">Organization</p>
+                        <Typography as="p" variant="h4" className="text-2xl text-slate-100">
+                          {organizeLabel}
+                        </Typography>
+                        <Typography as="p" variant="caption" className="text-slate-400 tracking-wider mt-1">
+                          Organization
+                        </Typography>
                       </div>
 
                       <div className="bg-slate-800/50 rounded-xl p-5 border border-slate-600/30 text-center">
                         <RotateCcw size={24} className="text-slate-400 mx-auto mb-2" />
-                        <p className="text-2xl font-bold text-slate-100">{renameEnabled ? "On" : "Off"}</p>
-                        <p className="text-xs text-slate-400 uppercase tracking-wider mt-1">Renaming</p>
+                        <Typography as="p" variant="h4" className="text-2xl text-slate-100">
+                          {renameEnabled ? "On" : "Off"}
+                        </Typography>
+                        <Typography as="p" variant="caption" className="text-slate-400 tracking-wider mt-1">
+                          Renaming
+                        </Typography>
                       </div>
                     </div>
 
@@ -882,36 +1028,42 @@
                     <div className="flex items-start gap-3 p-4 bg-slate-500/50 border border-slate-700 rounded-xl">
                       <Info className="text-slate-100 flex-shrink-0 mt-0.5" size={18} />
                       <div>
-                        <p className="text-sm font-medium text-slate-50">Safety Information</p>
-                        <p className="text-xs text-slate-100/80 mt-1">
+                        <Typography as="p" variant="label" className="text-sm text-slate-50">
+                          Safety Information
+                        </Typography>
+                        <Typography as="p" variant="body-sm" className="text-xs text-slate-100/80 mt-1">
                           Files will be <strong>moved</strong> (not copied) to the destination. Duplicate filenames will
                           be automatically renamed. Empty source folders will be cleaned up after processing. Metadata
                           renaming runs only when enabled.
-                        </p>
+                        </Typography>
                       </div>
                     </div>
                   </div>
 
                   <div className="flex justify-between">
-                    <Button
-                      size="lg"
-                      radius="lg"
-                      variant="flat"
-                      onPress={() => setStep("rename")}
-                      className="bg-slate-700/50 text-slate-200 font-medium px-6"
-                      startContent={<ArrowLeft size={18} />}
-                    >
+                  <Button
+                    size="lg"
+                    radius="lg"
+                    variant="flat"
+                    onPress={() => setStep("rename")}
+                    className="bg-slate-700/50 text-slate-200 font-medium px-6"
+                    startContent={<ArrowLeft size={18} />}
+                  >
+                    <Typography as="span" variant="body" className="text-sm">
                       Back
-                    </Button>
-                    <Button
-                      size="lg"
-                      radius="lg"
-                      onPress={startOrganization}
-                      className="bg-slate-50 text-slate-900 font-semibold px-10 hover:bg-slate-100/70"
-                      startContent={<MonitorPlay size={18} />}
-                    >
+                    </Typography>
+                  </Button>
+                  <Button
+                    size="lg"
+                    radius="lg"
+                    onPress={startOrganization}
+                    className="bg-slate-50 text-slate-900 font-semibold px-10 hover:bg-slate-100/70"
+                    startContent={<MonitorPlay size={18} />}
+                  >
+                    <Typography as="span" variant="body" className="text-sm">
                       Start Organization
-                    </Button>
+                    </Typography>
+                  </Button>
                   </div>
                 </motion.div>
               )}
@@ -928,8 +1080,12 @@
                   className="flex flex-col items-center justify-center min-h-[500px]"
                 >
                   <div className="text-center mb-10">
-                    <h2 className="text-3xl font-bold text-slate-50 mb-3">Processing Files</h2>
-                    <p className="text-slate-400">Please wait while your files are being organized...</p>
+                    <Typography as="h2" variant="h2" className="text-3xl text-slate-50 mb-3">
+                      Processing Files
+                    </Typography>
+                    <Typography as="p" variant="body" className="text-slate-400">
+                      Please wait while your files are being organized...
+                    </Typography>
                   </div>
 
                   <div className="relative mb-10">
@@ -949,8 +1105,10 @@
 
                   <div className="w-full max-w-md space-y-4">
                     {errorMessage && (
-                      <div className="bg-rose-500/10 border border-rose-500/30 rounded-xl p-4 text-rose-200 text-xs">
-                        {errorMessage}
+                      <div className="bg-rose-500/10 border border-rose-500/30 rounded-xl p-4">
+                        <Typography as="p" variant="body-sm" className="text-rose-200 text-xs">
+                          {errorMessage}
+                        </Typography>
                       </div>
                     )}
                     <Progress
@@ -967,8 +1125,12 @@
                           <FileText size={14} className="text-slate-300" />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-[10px] text-slate-400 uppercase tracking-wider mb-1">Current File</p>
-                          <p className="text-sm text-slate-200 font-mono truncate">{currentFile}</p>
+                          <Typography as="p" variant="caption" className="text-slate-400 tracking-wider mb-1">
+                            Current File
+                          </Typography>
+                          <Typography as="p" variant="mono" className="text-sm text-slate-200 truncate">
+                            {currentFile}
+                          </Typography>
                         </div>
                       </div>
                     </div>
@@ -988,7 +1150,9 @@
                       onPress={() => setShowCancelModal(true)}
                       className="w-full bg-slate-700/50 text-slate-300 mt-4"
                     >
-                      Cancel Operation
+                      <Typography as="span" variant="body" className="text-sm text-slate-300">
+                        Cancel Operation
+                      </Typography>
                     </Button>
                   </div>
                 </motion.div>
@@ -1009,16 +1173,22 @@
                     <CheckCircle size={48} className="text-emerald-400" />
                   </div>
 
-                  <h2 className="text-3xl font-bold text-slate-50 mb-3">Organization Complete</h2>
-                  <p className="text-slate-400 mb-10 text-center max-w-md">
+                  <Typography as="h2" variant="h2" className="text-3xl text-slate-50 mb-3">
+                    Organization Complete
+                  </Typography>
+                  <Typography as="p" variant="body" className="text-slate-400 mb-10 text-center max-w-md">
                     Your files have been successfully organized into the destination folder.
-                  </p>
+                  </Typography>
 
                   {displayStats && (
                     <div className="bg-slate-700/30 rounded-2xl border border-slate-600/30 p-8 w-full max-w-lg mb-8">
-                      <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4 text-center">
+                      <Typography
+                        as="h3"
+                        variant="caption"
+                        className="text-slate-400 tracking-wider mb-4 text-center font-bold"
+                      >
                         Final Results
-                      </h3>
+                      </Typography>
                       <div className="grid grid-cols-2 gap-3">
                         <StatCard icon={<FileImage size={18} />} label="Photos" value={displayStats.photos} />
                         <StatCard icon={<FileVideo size={18} />} label="Videos" value={displayStats.videos} />
@@ -1034,8 +1204,12 @@
                       </div>
 
                       <div className="mt-6 pt-6 border-t border-slate-600/30 text-center">
-                        <p className="text-3xl font-bold text-slate-100">{displayStats.processed}</p>
-                        <p className="text-xs text-slate-400 uppercase tracking-wider mt-1">Total Files Processed</p>
+                        <Typography as="p" variant="h2" className="text-3xl text-slate-100">
+                          {displayStats.processed}
+                        </Typography>
+                        <Typography as="p" variant="caption" className="text-slate-400 tracking-wider mt-1">
+                          Total Files Processed
+                        </Typography>
                       </div>
                     </div>
                   )}
@@ -1047,7 +1221,9 @@
                     className="bg-slate-100 text-slate-800 font-semibold px-10 hover:bg-white"
                     startContent={<RotateCcw size={18} />}
                   >
-                    Start New Session
+                    <Typography as="span" variant="body" className="text-sm">
+                      Start New Session
+                    </Typography>
                   </Button>
                 </motion.div>
               )}
@@ -1056,55 +1232,75 @@
         </main>
 
         {/* Cancel Modal */}
-        <Modal isOpen={showCancelModal} onClose={() => setShowCancelModal(false)} backdrop="blur">
-          <ModalContent className="bg-slate-800 border border-slate-700">
-            <ModalHeader className="text-slate-100">Cancel Operation?</ModalHeader>
-            <ModalBody>
-              <p className="text-slate-300">
-                Are you sure you want to cancel the current operation? Files that have already been moved will remain in
-                their new location.
-              </p>
-            </ModalBody>
-            <ModalFooter>
-              <Button variant="flat" onPress={() => setShowCancelModal(false)} className="bg-slate-700 text-slate-200">
+      <Modal isOpen={showCancelModal} onClose={() => setShowCancelModal(false)} backdrop="blur">
+        <ModalContent className="bg-slate-800 border border-slate-700">
+          <ModalHeader className="text-slate-100">
+            <Typography as="h4" variant="h4" className="text-slate-100">
+              Cancel Operation?
+            </Typography>
+          </ModalHeader>
+          <ModalBody>
+            <Typography as="p" variant="body" className="text-slate-300">
+              Are you sure you want to cancel the current operation? Files that have already been moved will remain in
+              their new location.
+            </Typography>
+          </ModalBody>
+          <ModalFooter>
+            <Button variant="flat" onPress={() => setShowCancelModal(false)} className="bg-slate-700 text-slate-200">
+              <Typography as="span" variant="label" className="text-slate-200">
                 Continue Processing
-              </Button>
-              <Button color="danger" onPress={handleCancelProcess}>
+              </Typography>
+            </Button>
+            <Button color="danger" onPress={handleCancelProcess}>
+              <Typography as="span" variant="label">
                 Cancel Operation
-              </Button>
-            </ModalFooter>
-          </ModalContent>
-        </Modal>
+              </Typography>
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
 
         {/* Footer */}
         <footer className="fixed bottom-0 left-0 right-0 bg-slate-800/80 backdrop-blur-sm border-t border-slate-700/30">
           <div className="max-w-6xl mx-auto px-6 py-3 flex flex-col md:flex-row items-center justify-between gap-2">
-            <div className="flex flex-wrap items-center justify-center gap-2 text-[10px] text-slate-500">
-              <span>Copyright (c) {currentYear} {app.author}</span>
-              <span className="hidden sm:inline">|</span>
+            <div className="flex flex-wrap items-center justify-center gap-2">
+              <Typography as="span" variant="body-sm" className="text-[10px] text-slate-500">
+                Copyright (c) {currentYear} {app.author}
+              </Typography>
+              <Typography as="span" variant="body-sm" className="hidden sm:inline text-[10px] text-slate-500">
+                |
+              </Typography>
               <a
                 href={app.links.license}
                 target="_blank"
                 rel="noreferrer"
-                className="hover:text-slate-300 transition-colors"
+                className="text-slate-500 hover:text-slate-300 transition-colors"
               >
-                {app.license} License
+                <Typography as="span" variant="body-sm" className="text-[10px]">
+                  {app.license} License
+                </Typography>
               </a>
-              <span className="hidden sm:inline">|</span>
+              <Typography as="span" variant="body-sm" className="hidden sm:inline text-[10px] text-slate-500">
+                |
+              </Typography>
               <a
                 href={app.links.repository}
                 target="_blank"
                 rel="noreferrer"
-                className="hover:text-slate-300 transition-colors"
+                className="text-slate-500 hover:text-slate-300 transition-colors"
               >
-                Repository
+                <Typography as="span" variant="body-sm" className="text-[10px]">
+                  Repository
+                </Typography>
               </a>
             </div>
             <div className="flex items-center gap-3">
-              <span className="text-[10px] text-slate-500 uppercase tracking-widest">
+              <Typography as="span" variant="caption" className="text-[10px] text-slate-500 tracking-widest">
                 {app.name} v{app.version}
-              </span>
-              <span className="text-[10px] text-slate-500">Local Processing Only</span>
+              </Typography>
+              <Typography as="span" variant="body-sm" className="text-[10px] text-slate-500">
+                Local Processing Only
+              </Typography>
               <a
                 href={app.links.repository}
                 target="_blank"
@@ -1135,8 +1331,12 @@
     return (
       <div className="bg-slate-700/30 rounded-lg p-2 text-center border border-slate-600/20">
         <div className="text-slate-400 flex justify-center mb-1">{icon}</div>
-        <p className="text-sm font-bold text-slate-200">{value}</p>
-        <p className="text-[8px] text-slate-500 uppercase">{label}</p>
+        <Typography as="p" variant="label" className="text-sm text-slate-200">
+          {value}
+        </Typography>
+        <Typography as="p" variant="caption" className="text-[8px] text-slate-500">
+          {label}
+        </Typography>
       </div>
     );
   }
@@ -1152,21 +1352,27 @@
     value: number;
     isError?: boolean;
   }) {
-    return (
-      <div
-        className={`rounded-xl p-4 border flex items-center gap-3 ${
-          isError && value > 0
-            ? "bg-rose-500/10 border-rose-500/30"
-            : "bg-slate-800/50 border-slate-600/30"
-        }`}
-      >
-        <div className={isError && value > 0 ? "text-rose-400" : "text-slate-400"}>{icon}</div>
-        <div>
-          <p className={`text-xl font-bold ${isError && value > 0 ? "text-rose-300" : "text-slate-100"}`}>
-            {value.toLocaleString()}
-          </p>
-          <p className="text-[9px] text-slate-400 uppercase tracking-wider">{label}</p>
-        </div>
+  return (
+    <div
+      className={`rounded-xl p-4 border flex items-center gap-3 ${
+        isError && value > 0
+          ? "bg-rose-500/10 border-rose-500/30"
+          : "bg-slate-800/50 border-slate-600/30"
+      }`}
+    >
+      <div className={isError && value > 0 ? "text-rose-400" : "text-slate-400"}>{icon}</div>
+      <div>
+        <Typography
+          as="p"
+          variant="h4"
+          className={`text-xl ${isError && value > 0 ? "text-rose-300" : "text-slate-100"}`}
+        >
+          {value.toLocaleString()}
+        </Typography>
+        <Typography as="p" variant="caption" className="text-[9px] text-slate-400 tracking-wider">
+          {label}
+        </Typography>
       </div>
-    );
-  }
+    </div>
+  );
+}
