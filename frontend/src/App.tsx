@@ -502,8 +502,9 @@ import { app } from "./config/index.config";
           <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
             <div className="flex items-center gap-3">
              
-            <div>
-             <img src="/header-icon-light.png" alt="Archivist" className="w-full h-32 object-contain" />
+            <div className="flex items-center gap-3 app-no-drag">
+             <img src="/icon.png" alt="Archivist" className="w-full h-10 object-contain" />
+             <Typography as="h1" variant="h1" className="text-xl font-bold text-slate-100 select-none">Archivist</Typography>
             </div>
             </div>
 

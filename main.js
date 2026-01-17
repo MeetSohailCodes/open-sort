@@ -14,6 +14,8 @@ let pythonProcess;
 
 const API_PORT = 45455;
 const IS_DEV = process.env.NODE_ENV === "development";
+const IS_WINDOWS = process.platform === "win32";
+const IS_MAC = process.platform === "darwin";
 
 const ZOOM_MIN = 0.5;
 const ZOOM_MAX = 2.0;
@@ -114,10 +116,19 @@ function startPythonBackend() {
 }
 
 function createWindow() {
+  const windowIcon = path.join(__dirname, "assets", "icon.png");
   mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
-    backgroundColor: "#020617",
+    backgroundColor: "#00000000",
+    transparent: true,
+    hasShadow: true,
+    icon: windowIcon,
+    ...(IS_MAC
+      ? {
+          vibrancy: "sidebar",
+        }
+      : {}),
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,
@@ -125,7 +136,7 @@ function createWindow() {
     autoHideMenuBar: true,
     titleBarStyle: "hidden", // Custom Title Bar look
     titleBarOverlay: {
-      color: "#0f172a",
+      color: "#00000000",
       symbolColor: "#ffffff",
     },
   });

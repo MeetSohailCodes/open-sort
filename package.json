@@ -14,9 +14,10 @@
   },
   "build": {
     "appId": "com.antigravity.mediaorganizer",
-    "productName": "Media Organizer",
+    "productName": "Archivist",
     "files": [
       "main.js",
+      "assets/**/*",
       "frontend/dist/**/*",
       "backend/dist/main.exe"
     ],

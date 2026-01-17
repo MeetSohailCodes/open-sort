@@ -105,22 +105,12 @@ samp {
   -webkit-app-region: no-drag;
 }
 
-/* Scrollbar styling */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+/* Hide all scrollbars */
+* {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
 }
 
-::-webkit-scrollbar-track {
-  background: #343a40;
-  border-radius: 3px;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #6c757d;
-  border-radius: 3px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #adb5bd;
+*::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
 }
