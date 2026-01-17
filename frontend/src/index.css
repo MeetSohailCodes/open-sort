@@ -1,10 +1,93 @@
+@font-face {
+  font-family: "Manrope";
+  src: url("/assets/fonts/Manrope/Manrope-VariableFont_wght.ttf") format("truetype");
+  font-weight: 200 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Figtree";
+  src: url("/assets/fonts/Figtree/Figtree-VariableFont_wght.ttf") format("truetype");
+  font-weight: 300 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Figtree";
+  src: url("/assets/fonts/Figtree/Figtree-Italic-VariableFont_wght.ttf") format("truetype");
+  font-weight: 300 900;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "EB Garamond";
+  src: url("/assets/fonts/EBGaramond/EBGaramond-VariableFont_wght.ttf") format("truetype");
+  font-weight: 400 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "EB Garamond";
+  src: url("/assets/fonts/EBGaramond/EBGaramond-Italic-VariableFont_wght.ttf") format("truetype");
+  font-weight: 400 800;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Google Sans Code";
+  src: url("/assets/fonts/Google_Sans_Code/GoogleSansCode-VariableFont_wght.ttf") format("truetype");
+  font-weight: 300 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Google Sans Code";
+  src: url("/assets/fonts/Google_Sans_Code/GoogleSansCode-Italic-VariableFont_wght.ttf") format("truetype");
+  font-weight: 300 800;
+  font-style: italic;
+  font-display: swap;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --font-body: "Manrope", "Figtree", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Figtree", "Manrope", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "EB Garamond", Georgia, "Times New Roman", serif;
+  --font-mono: "Google Sans Code", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
 body {
   background-color: #212529;
   color: #f8f9fa;
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-display);
+  letter-spacing: -0.01em;
+}
+
+code,
+pre,
+kbd,
+samp {
+  font-family: var(--font-mono);
 }
 
 .app-drag {

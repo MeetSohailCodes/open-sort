@@ -9,6 +9,12 @@ export default {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ["Manrope", "ui-sans-serif", "system-ui", "sans-serif"],
+        display: ["Figtree", "Manrope", "ui-sans-serif", "system-ui", "sans-serif"],
+        serif: ["EB Garamond", "Georgia", "Times New Roman", "serif"],
+        mono: ["Google Sans Code", "ui-monospace", "SFMono-Regular", "Menlo", "Monaco", "Consolas", "monospace"],
+      },
       colors: {
         slate: {
           50: "#f8f9fa",
