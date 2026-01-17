@@ -1,7 +1,7 @@
 export const app = {
   name: "Archivist",
   tagline: "Media Organizer",
-  author: "Sohail Khan",
+  author: "Muhammad Sohail",
   version: "1.1.0",
   license: "MIT",
   links: {

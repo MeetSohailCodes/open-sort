@@ -114,6 +114,28 @@ async def websocket_endpoint(websocket: WebSocket):
         print(f"WebSocket Error: {e}")
 
 if __name__ == "__main__":
-    # Run on a fixed port likely to be free
-    # Run on a fixed port likely to be free
-    uvicorn.run("main:app", host="127.0.0.1", port=45455, reload=True)
+    import sys
+    import logging
+    
+    # Configure basic logging for frozen apps (PyInstaller)
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+        handlers=[logging.StreamHandler(sys.stdout)] if sys.stdout else []
+    )
+    
+    # Check if running as frozen exe (PyInstaller)
+    is_frozen = getattr(sys, 'frozen', False)
+    
+    if is_frozen:
+        # Production: disable uvicorn's logging config to avoid isatty error
+        uvicorn.run(
+            app,  # Pass app object directly, not string
+            host="127.0.0.1",
+            port=45455,
+            log_config=None,  # Disable uvicorn's default logging
+            reload=False
+        )
+    else:
+        # Development: use normal config with reload
+        uvicorn.run("main:app", host="127.0.0.1", port=45455, reload=True)
