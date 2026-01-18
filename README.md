@@ -2,25 +2,35 @@
 
 Archivist is a local-first media organizer that sorts photos, videos, audio, archives, and documents into a clean folder structure. It runs with a React + Electron UI and a FastAPI backend, and it keeps all processing on your machine.
 
+## Download
+
 <a href="https://github.com/MeetSohailCodes/Archivist/releases/tag/v1.0" style="display: inline-flex; align-items: center; text-decoration: none; height:32px;">
   <img src="assets/icon.png" alt="Download for Windows" width="32" height="32" style="margin-right: 8px; vertical-align: middle;">
   <span style="font-size: 1.1em; vertical-align: middle;"><b>Download for Windows</b></span>
 </a>
 
+---
+
+## Screenshots
+
+**App Overview**
 ![App Screenshot](docs/screenshots/preview.png)
 
+**Sample Workflow**
 
-![App Screenshot](docs/screenshots/image.png)
-                           ⏬
-![App Screenshot](docs/screenshots/image1.png)
-                           ⏬
-![App Screenshot](docs/screenshots/image2.png)
-                           ⏬
-![App Screenshot](docs/screenshots/image3.png)
-                           ⏬
-![App Screenshot](docs/screenshots/image4.png)
-                           ⏬
-![App Screenshot](docs/screenshots/image5.png)
+| Step | Screenshot |
+|------|:----------|
+| 1    | ![Initial](docs/screenshots/image.png)           |
+|      | ⏬                                           |
+| 2    | ![Step 2](docs/screenshots/image1.png)         |
+|      | ⏬                                           |
+| 3    | ![Step 3](docs/screenshots/image2.png)         |
+|      | ⏬                                           |
+| 4    | ![Step 4](docs/screenshots/image3.png)         |
+|      | ⏬                                           |
+| 5    | ![Step 5](docs/screenshots/image4.png)         |
+|      | ⏬                                           |
+| 6    | ![Step 6](docs/screenshots/image5.png)         |
 
 
 ## Features
