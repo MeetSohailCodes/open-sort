@@ -1,5 +1,5 @@
 {
-  "name": "media-organizer",
+  "name": "archivist",
   "version": "1.0.0",
   "description": "Avant-Garde Media Organization Tool",
   "main": "main.js",
@@ -8,7 +8,7 @@
     "dev": "cross-env NODE_ENV=development concurrently \"npm run dev:frontend\" \"electron .\"",
     "dev:frontend": "cd frontend && npm run dev",
     "build:frontend": "cd frontend && npm run build",
-    "build:backend": "cd backend && ..\\backend\\venv\\Scripts\\pyinstaller --onefile --noconsole --name main main.py",
+    "build:backend": "cd backend && ..\\backend\\venv\\Scripts\\pyinstaller --clean main.spec",
     "pack": "electron-builder --dir",
     "dist": "npm run build:frontend && npm run build:backend && electron-builder",
     "dist:win": "npm run build:frontend && npm run build:backend && electron-builder --win --x64 --arm64"
@@ -17,11 +17,14 @@
     "appId": "com.meetsohail.archivist",
     "productName": "Archivist",
     "icon": "build/icon",
+    "electronLanguages": [
+      "en-US"
+    ],
+    "compression": "maximum",
     "files": [
       "main.js",
       "assets/**/*",
-      "frontend/dist/**/*",
-      "backend/dist/main.exe"
+      "frontend/dist/**/*"
     ],
     "extraResources": [
       {
@@ -50,7 +53,5 @@
     "electron-builder": "^26.4.0",
     "wait-on": "^9.0.3"
   },
-  "dependencies": {
-    "python-shell": "^5.0.0"
-  }
+  "dependencies": {}
 }

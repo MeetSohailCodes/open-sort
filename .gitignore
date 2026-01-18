@@ -14,6 +14,7 @@ Thumbs.db
 backend/dist/
 /backend/_pycache__/
 /dist/
+/APP/
 # IDE
 .vscode/
 .idea/
