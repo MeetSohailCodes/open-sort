@@ -1,5 +1,5 @@
 {
-  "name": "archivist",
+  "name": "opensort",
   "version": "1.0.0",
   "description": "Avant-Garde Media Organization Tool",
   "main": "main.js",
@@ -14,8 +14,8 @@
     "dist:win": "npm run build:frontend && npm run build:backend && electron-builder --win --x64 --arm64"
   },
   "build": {
-    "appId": "com.meetsohail.archivist",
-    "productName": "Archivist",
+    "appId": "com.meetsohail.opensort",
+    "productName": "OpenSort",
     "icon": "build/icon",
     "electronLanguages": [
       "en-US"
@@ -41,7 +41,7 @@
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "shortcutName": "Archivist"
+      "shortcutName": "OpenSort"
     }
   },
   "author": "Meet Sohail",

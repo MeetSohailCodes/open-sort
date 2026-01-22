@@ -38,7 +38,7 @@ async def websocket_endpoint(websocket: WebSocket):
     
     # Auth Check
     token = websocket.query_params.get("token")
-    expected_token = os.environ.get("ARCHIVIST_TOKEN")
+    expected_token = os.environ.get("OpenSort_TOKEN")
     
     if expected_token and token != expected_token:
         print(f"Auth Failed. Expected {expected_token[:5]}..., Got {token[:5]}...")

@@ -66,7 +66,7 @@ interface Stats {
 type Step = "setup" | "types" | "rename" | "confirm" | "processing" | "done";
 type OrganizeMode = "category" | "year" | "month";
 
-const STORAGE_KEY = "archivist_config_v1";
+const STORAGE_KEY = "OpenSort_config_v1";
 
 const EXTENSION_OPTIONS: ExtensionsByCategory = {
   Photos: [
@@ -635,7 +635,7 @@ export default function App() {
             <div className="flex items-center gap-3 app-no-drag">
               <img
                 src="./assets/icons/icon.png"
-                alt="Archivist"
+                alt="OpenSort"
                 className="w-full h-10 object-contain"
               />
               <Typography
@@ -643,7 +643,7 @@ export default function App() {
                 variant="h1"
                 className="text-xl font-bold text-slate-100 select-none"
               >
-                Archivist
+                OpenSort
               </Typography>
             </div>
           </div>

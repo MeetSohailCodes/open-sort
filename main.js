@@ -98,7 +98,7 @@ function startPythonBackend() {
 
     console.log(`Starting Python (Dev): ${pythonExecutable} ${scriptPath}`);
     pythonProcess = spawn(pythonExecutable, [scriptPath], {
-      env: { ...process.env, ARCHIVIST_TOKEN: API_TOKEN },
+      env: { ...process.env, OpenSort_TOKEN: API_TOKEN },
     });
   } else {
     // Production (Bundled EXE)
@@ -111,7 +111,7 @@ function startPythonBackend() {
     );
     console.log(`Starting Python (Prod): ${exePath}`);
     pythonProcess = spawn(exePath, [], {
-      env: { ...process.env, ARCHIVIST_TOKEN: API_TOKEN },
+      env: { ...process.env, OpenSort_TOKEN: API_TOKEN },
     });
   }
 
