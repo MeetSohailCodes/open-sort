@@ -27,3 +27,9 @@ backend/dist/
 # Environment
 .env
 .env.local
+
+# Binaries
+*.exe
+*.dll
+*.bin
+APP/

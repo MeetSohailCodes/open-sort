@@ -1,13 +1,50 @@
-# Archivist
+<div align="center">
+  <img src="assets/icon.png" alt="Archivist Logo" width="120" />
 
-Archivist is a local-first media organizer that sorts photos, videos, audio, archives, and documents into a clean folder structure. It runs with a React + Electron UI and a FastAPI backend, and it keeps all processing on your machine.
+  <h1>Archivist</h1>
+
+  <p>
+    <strong>A local-first media organizer that sorts photos, videos, audio, archives, and documents into a clean folder structure.</strong>
+    <br />
+    Runs with a React + Electron UI and a FastAPI backend, keeping all processing securely on your machine.
+  </p>
+
+  <p>
+    <!-- Badges -->
+    <a href="https://github.com/MeetSohailCodes/Archivist/releases"><img src="https://img.shields.io/badge/Platform-Windows-0078D4?logo=windows&logoColor=white" alt="Platform: Windows" /></a>
+    <a href="https://www.python.org/"><img src="https://img.shields.io/badge/Python-3.9%2B-3776AB?logo=python&logoColor=white" alt="Python 3.9+" /></a>
+    <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-green" alt="License: MIT" /></a>
+  </p>
+
+  <p>
+    <a href="#download">Download</a> •
+    <a href="#features">Features</a> •
+    <a href="#tech-stack">Tech Stack</a> •
+    <a href="#contributing">Contributing</a>
+  </p>
+</div>
+
+<br />
+
+## Why Archivist?
+
+Bringing order to your digital chaos with a privacy-first approach.
+
+- 🔒 **Local-First Processing**: No uploads, everything stays on your machine.
+- 📂 **Smart Organization**: Automatically categorizes files by type, year, and month.
+- ⚡ **Modern Stack**: Built with React, Electron, and a robust FastAPI backend.
+- 🏷️ **Metadata Power**: Uses file creation dates and metadata for accurate sorting.
+
+---
 
 ## Download
 
-<a href="https://github.com/MeetSohailCodes/Archivist/releases/tag/v1.0" style="display: inline-flex; align-items: center; text-decoration: none; height:32px;">
-  <img src="assets/icon.png" alt="Download for Windows" width="32" height="32" style="margin-right: 8px; vertical-align: middle;">
-  <span style="font-size: 1.1em; vertical-align: middle;"><b>Download for Windows</b></span>
+<div align="center">
+<a href="https://github.com/MeetSohailCodes/Archivist/releases/tag/v1.0" style="display: inline-flex; align-items: center; text-decoration: none; height:40px; background-color: #0078D4; color: white; padding: 0 16px; border-radius: 6px;">
+  <img src="assets/icon.png" alt="Download for Windows" width="24" height="24" style="margin-right: 8px; filter: brightness(0) invert(1);">
+  <span style="font-size: 1em;"><b>Download for Windows</b></span>
 </a>
+</div>
 
 ---
 
