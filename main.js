@@ -1,4 +1,10 @@
 const { app, BrowserWindow, ipcMain, dialog, Menu } = require("electron");
+const crypto = require("crypto");
+
+// Generate a random secure token
+const API_TOKEN = crypto.randomBytes(32).toString("hex");
+
+ipcMain.handle("get-api-config", () => ({ token: API_TOKEN, port: 45455 }));
 
 ipcMain.handle("select-dirs", async () => {
   const result = await dialog.showOpenDialog(mainWindow, {
@@ -91,7 +97,9 @@ function startPythonBackend() {
     );
 
     console.log(`Starting Python (Dev): ${pythonExecutable} ${scriptPath}`);
-    pythonProcess = spawn(pythonExecutable, [scriptPath]);
+    pythonProcess = spawn(pythonExecutable, [scriptPath], {
+      env: { ...process.env, ARCHIVIST_TOKEN: API_TOKEN },
+    });
   } else {
     // Production (Bundled EXE)
     // We will assume the python executable is packaged alongside the app
@@ -102,7 +110,9 @@ function startPythonBackend() {
       "main.exe",
     );
     console.log(`Starting Python (Prod): ${exePath}`);
-    pythonProcess = spawn(exePath);
+    pythonProcess = spawn(exePath, [], {
+      env: { ...process.env, ARCHIVIST_TOKEN: API_TOKEN },
+    });
   }
 
   pythonProcess.stdout.on("data", (data) => console.log(`[Python]: ${data}`));

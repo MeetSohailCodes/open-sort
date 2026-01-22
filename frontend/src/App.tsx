@@ -46,8 +46,10 @@ import RenameOptions, {
 import { Typography } from "./components/Typography";
 import { app } from "./config/index.config";
 // API URL
-const API_URL = "http://127.0.0.1:45455";
-const WS_URL = "ws://127.0.0.1:45455/ws";
+// API URL
+const API_PORT = 45455;
+const API_URL = `http://127.0.0.1:${API_PORT}`;
+const BASE_WS_URL = `ws://127.0.0.1:${API_PORT}/ws`;
 
 interface Stats {
   processed: number;
@@ -205,7 +207,9 @@ export default function App() {
   const [renameDatePosition, setRenameDatePosition] =
     useState<RenameDatePosition>("prefix");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
   const [zoomFactor, setZoomFactor] = useState(1);
+  const [apiToken, setApiToken] = useState<string | null>(null);
   const currentYear = new Date().getFullYear();
 
   const ws = useRef<WebSocket | null>(null);
@@ -330,6 +334,21 @@ export default function App() {
   useEffect(() => {
     refreshZoom();
   }, [refreshZoom]);
+
+  // Fetch API Config (Token)
+  useEffect(() => {
+    const fetchConfig = async () => {
+      const ipcRenderer = getIpcRenderer();
+      if (!ipcRenderer) return;
+      try {
+        const config = await ipcRenderer.invoke("get-api-config");
+        if (config?.token) setApiToken(config.token);
+      } catch (e) {
+        console.error("Failed to get API config", e);
+      }
+    };
+    fetchConfig();
+  }, []);
 
   // Load persisted configuration
   useEffect(() => {
@@ -466,7 +485,10 @@ export default function App() {
     setStats(null);
     setFinalStats(null);
     setErrorMessage(null);
-    ws.current = new WebSocket(WS_URL);
+
+    // Connect with Token
+    const wsUrl = apiToken ? `${BASE_WS_URL}?token=${apiToken}` : BASE_WS_URL;
+    ws.current = new WebSocket(wsUrl);
 
     const connectTimeout = setTimeout(() => {
       if (ws.current && ws.current.readyState !== WebSocket.OPEN) {

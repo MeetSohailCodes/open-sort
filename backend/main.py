@@ -1,4 +1,5 @@
-from fastapi import FastAPI, WebSocket
+from fastapi import FastAPI, WebSocket, HTTPException, status
+import os
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import uvicorn
@@ -34,6 +35,17 @@ def health():
 async def websocket_endpoint(websocket: WebSocket):
     print("WebSocket: Connection attempt")
     log_line("WebSocket: Connection attempt")
+    
+    # Auth Check
+    token = websocket.query_params.get("token")
+    expected_token = os.environ.get("ARCHIVIST_TOKEN")
+    
+    if expected_token and token != expected_token:
+        print(f"Auth Failed. Expected {expected_token[:5]}..., Got {token[:5]}...")
+        log_line("WS ERROR: Authentication Failed")
+        await websocket.close(code=status.WS_1008_POLICY_VIOLATION)
+        return
+
     await websocket.accept()
     print("WebSocket: Connection accepted")
     log_line("WebSocket: Connection accepted")
