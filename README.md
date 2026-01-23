@@ -37,6 +37,17 @@ Bringing order to your digital chaos with a privacy-first approach.
 
 ---
 
+## Security and Permissions
+
+OpenSort is designed for local, offline use only. It does not require internet access, elevated privileges, or special permissions beyond standard file system access to user-selected directories.
+
+- **Permissions Required**: Read/write access to chosen source and destination folders. No admin rights needed.
+- **Data Handling**: All file operations (scanning, moving, renaming) occur locally. No data is sent to external servers.
+- **Safe Usage**: Avoid running on system-critical folders. The app uses Electron's secure context and does not execute arbitrary code.
+- **Reporting Issues**: If you encounter security concerns, see SECURITY.md or open an issue.
+
+---
+
 ## Download
 
 <div align="center">
@@ -124,6 +135,10 @@ See `CONTRIBUTING.md`.
 ## Security
 
 See `SECURITY.md`.
+
+## Privacy
+
+Your privacy is our priority. OpenSort operates completely offline with no data transmission. See our `Privacy-Policy.md` for details.
 
 ## License
 

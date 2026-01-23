@@ -28,6 +28,7 @@ desktop.ini
 # Environment
 .env
 .env.local
+backend/venv/
 
 # Binaries
 *.exe
