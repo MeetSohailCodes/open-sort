@@ -62,23 +62,23 @@ OpenSort is designed for local, offline use only. It does not require internet a
 ## Screenshots
 
 **App Overview**
-![App Screenshot](docs/screenshots/preview.png)
+![App Screenshot](assets/docs/screenshots/preview.png)
 
 **Sample Workflow**
 
 | Step | Screenshot                             |
 | ---- | :------------------------------------- |
-| 1    | ![Initial](docs/screenshots/image.png) |
+| 1    | ![Initial](assets/docs/screenshots/image.png) |
 |      | ⏬                                     |
-| 2    | ![Step 2](docs/screenshots/image1.png) |
+| 2    | ![Step 2](assets/docs/screenshots/image1.png) |
 |      | ⏬                                     |
-| 3    | ![Step 3](docs/screenshots/image2.png) |
+| 3    | ![Step 3](assets/docs/screenshots/image2.png) |
 |      | ⏬                                     |
-| 4    | ![Step 4](docs/screenshots/image3.png) |
+| 4    | ![Step 4](assets/docs/screenshots/image3.png) |
 |      | ⏬                                     |
-| 5    | ![Step 5](docs/screenshots/image4.png) |
+| 5    | ![Step 5](assets/docs/screenshots/image4.png) |
 |      | ⏬                                     |
-| 6    | ![Step 6](docs/screenshots/image5.png) |
+| 6    | ![Step 6](assets/docs/screenshots/image5.png) |
 
 ## Features
 
@@ -126,7 +126,7 @@ Update product metadata and links in:
 
 ## Screenshot Notes
 
-The screenshot is a placeholder. Replace `docs/screenshots/app-preview.svg` with your real screenshot while keeping the same filename, or update the README image path.
+The screenshot is a placeholder. Replace `assets/docs/screenshots/app-preview.svg` with your real screenshot while keeping the same filename, or update the README image path.
 
 ## Contributing
 
