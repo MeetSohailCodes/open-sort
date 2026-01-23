@@ -16,6 +16,7 @@ backend/dist/
 /dist/
 /APP/
 # IDE
+desktop.ini
 .vscode/
 .idea/
 *.swp
