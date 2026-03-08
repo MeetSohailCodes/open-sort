@@ -8,10 +8,11 @@
     "dev": "cross-env NODE_ENV=development concurrently \"npm run dev:frontend\" \"electron .\"",
     "dev:frontend": "cd frontend && npm run dev",
     "build:frontend": "cd frontend && npm run build",
-    "build:backend": "cd backend && ..\\backend\\venv\\Scripts\\pyinstaller --clean main.spec",
+    "build:backend": "cd backend && python -m PyInstaller --clean main.spec",
     "pack": "electron-builder --dir",
     "dist": "npm run build:frontend && npm run build:backend && electron-builder",
-    "dist:win": "npm run build:frontend && npm run build:backend && electron-builder --win --x64 --arm64"
+    "dist:win": "npm run build:frontend && npm run build:backend && electron-builder --win --x64 --arm64",
+    "build:win": "node build-windows.js"
   },
   "build": {
     "appId": "com.meetsohail.opensort",
@@ -23,6 +24,7 @@
     "compression": "maximum",
     "files": [
       "main.js",
+      "preload.js",
       "assets/**/*",
       "frontend/dist/**/*"
     ],
@@ -33,7 +35,13 @@
       }
     ],
     "win": {
-      "target": "nsis",
+      "requestedExecutionLevel": "asInvoker",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64", "arm64"]
+        }
+      ],
       "icon": "build/icon.ico"
     },
     "nsis": {

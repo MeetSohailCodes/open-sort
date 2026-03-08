@@ -117,6 +117,11 @@ Optional: run the Electron shell (expects the backend to be running):
 - Frontend build: `npm run build:frontend`
 - Backend build (Windows): `npm run build:backend`
 - Full package: `npm run dist`
+- Windows multi-arch build: `npm run build:win` (creates both x64 and arm64 installers)
+
+For detailed Windows build instructions, see [README-BUILD.md](README-BUILD.md).
+
+For troubleshooting common issues, see [TROUBLESHOOTING.md](TROUBLESHOOTING.md).
 
 ## Configuration
 
